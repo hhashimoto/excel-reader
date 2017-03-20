@@ -1,11 +1,12 @@
 <?php
+namespace hhashimoto\excel;
 
 /**
  * xl/workbook.xml
  *   - workbook
  *     - sheets
  */
-class Sheets implements Countable {
+class Sheets implements \Countable {
     private $sheets;
 
     public function __construct() {
