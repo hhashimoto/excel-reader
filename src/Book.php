@@ -49,10 +49,11 @@ class Book {
             $xml = new SimpleXMLElement($workbook);
             $workbook = null;
 
+            Sheet::belongsTo($this);
             $sheets = new Sheets;
             foreach ($xml->sheets->sheet as $tag => $sheet) {
                 $r = $sheet->attributes('r', true);
-                $s = new Sheet($this->name, $sheet['name'], $sheet['sheetId'], $r['id']);
+                $s = new Sheet($sheet['name'], $sheet['sheetId'], $r['id']);
                 $sheets->add($s);
             }
             $this->sheets = $sheets;
@@ -63,6 +64,7 @@ class Book {
             $this->name = null;
             $this->sheets = null;
             $this->sharedStrings = null;
+            Sheet::belongsTo(null);
         } finally {
             if ($zip) {
                 $zip->close();
@@ -107,10 +109,10 @@ class Book {
     }
 
     /**
-     * @param int $index
+     * @param int $index integer or numeric string
      * @return string
      */
     public function getSharedString($index) {
-        return $this->sharedStrings->get($index);
+        return $this->sharedStrings->get((int)$index);
     }
 }

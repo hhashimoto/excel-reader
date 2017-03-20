@@ -7,7 +7,7 @@
  *       - sheet
  */
 class Sheet {
-    private $bookName;
+    private static $book;
 
     private $name;
     private $sheetId;
@@ -21,17 +21,18 @@ class Sheet {
     private $right  = null;
     private $bottom = null;
 
+    static function belongsTo(Book $book) {
+        self::$book = $book;
+    }
+
     /**
      * Construct
      *
-     * @param string $bookName
      * @param (string | SimpleXMLElement) $name
      * @param (string | SimpleXMLElement) $sheetId
      * @param (string | SimpleXMLElement) $refId
      */
-    function __construct($bookName, $name, $sheetId, $refId) {
-        $this->bookName = $bookName;
-
+    function __construct($name, $sheetId, $refId) {
         // '(string)$var' convert SimpleXMLElement to string
         $this->name    = (string)$name;
         $this->sheetId = (string)$sheetId;
@@ -71,7 +72,7 @@ class Sheet {
 
     private function load() {
         $zip = new ZipArchive;
-        if (! $zip->open($this->bookName)) {
+        if (! $zip->open(self::$book->name())) {
             throw new \Exception("'{$name}' could not open!");
         }
 
@@ -97,7 +98,7 @@ class Sheet {
                     $val = '';
                     if ($c->v) {
                         if ($c['t'] && $c['t'] == 's') {
-                            $val = 'sharedStrings.xml # ' + $c->v;// TODO ref shared string
+                            $val = self::$book->getSharedString($c->v);
                         } else {
                             $val = $c->v;
                         }
