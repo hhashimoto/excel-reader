@@ -5,7 +5,7 @@ class SheetTest extends \PHPUnit_Framework_TestCase {
      * @test
      */
     public function getAccessorsReturnsSameAsConstructorArgs() {
-        $sut = new Sheet('', 'testSheet', '1', 'rId1');
+        $sut = new Sheet('testSheet', '1', 'rId1');
 
         $this->assertSame('testSheet', $sut->name());
         $this->assertSame('1',         $sut->id());
@@ -30,6 +30,21 @@ class SheetTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $actual);
     }
 
-//    public function getCellWhenSharedStrings() {
-//    }
+    /**
+     * @test
+     */
+    public function getCellWhenSharedStrings() {
+        $book = new Book;
+        $book->load('tests/fixtures/test1.xlsx');
+
+        $sut = $book->getSheetByName('Sheet2');
+
+        $expected = new Cell('sheetName');
+        $actual = $sut->getCell('B2');
+        $this->assertEquals($expected, $actual);
+
+        $expected = new Cell('Sheet2');
+        $actual = $sut->getCell('C2');
+        $this->assertEquals($expected, $actual);
+    }
 }
