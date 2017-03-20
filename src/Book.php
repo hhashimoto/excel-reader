@@ -4,8 +4,11 @@ class Book {
     // string
     private $name;
 
-    // Sheet
+    // Sheets
     private $sheets;
+
+    // SharedStrings
+    private $sharedStrings;
 
     /**
      * Load Excel-Book named $name
@@ -24,8 +27,21 @@ class Book {
 
         $this->name = $name;
         $this->sheets = null;
+        $this->sharedStrings = null;
 
         try {
+            // SharedString
+            $ss = $zip->getFromName('xl/sharedStrings.xml');
+            $xml = new SimpleXMLElement($ss);
+            $ss = null;
+
+            $sharedStrings = new SharedStrings;
+            foreach ($xml->si as $si) {
+                $sharedStrings->add($si->t);
+            }
+            $this->sharedStrings = $sharedStrings;
+
+            // WorkBook
             $workbook = $zip->getFromName('xl/workbook.xml');
             $zip->close();
             $zip = null;
@@ -46,6 +62,7 @@ class Book {
 
             $this->name = null;
             $this->sheets = null;
+            $this->sharedStrings = null;
         } finally {
             if ($zip) {
                 $zip->close();
@@ -87,5 +104,13 @@ class Book {
      */
     public function name() {
         return $this->name;
+    }
+
+    /**
+     * @param int $index
+     * @return string
+     */
+    public function getSharedString($index) {
+        return $this->sharedStrings->get($index);
     }
 }
