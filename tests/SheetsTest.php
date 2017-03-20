@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../Sheets.php';
-require_once __DIR__ . '/../Sheet.php';
-
 class SheetsTest extends \PHPUnit_Framework_TestCase {
     /**
      * @test
