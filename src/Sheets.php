@@ -13,11 +13,13 @@ class Sheets implements Countable {
     }
 
     /**
-     * Add sheet with unique sheet name
+     * Add sheet
+     *
+     * NOTE: $sheet must have a unique name in the book
      * @param Sheet $sheet
      */
     public function add(Sheet $sheet) {
-        $this->sheets[$sheet->name()] = $sheet;
+        $this->sheets[] = $sheet;
     }
 
     /**
@@ -28,11 +30,13 @@ class Sheets implements Countable {
      * @return Sheet | null
      */
     public function find($sheetName) {
-        if (array_key_exists($sheetName, $this->sheets)) {
-            return $this->sheets[$sheetName];
-        } else {
-            return null;
+        $l = mb_strlen($sheetName);
+        foreach ($this->sheets as $sheet) {
+            if ($l !== mb_strlen($sheet->name())) continue;
+
+            if (mb_strpos($sheetName, $sheet->name()) === 0) return $sheet;
         }
+        return null;
     }
 
     /**
