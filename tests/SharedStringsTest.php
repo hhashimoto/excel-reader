@@ -1,4 +1,7 @@
 <?php
+namespace hhashimoto\excel\tests;
+
+use hhashimoto\excel\Book;
 
 class SharedStringsTest extends \PHPUnit_Framework_TestCase {
     /**

@@ -1,4 +1,8 @@
 <?php
+namespace hhashimoto\excel\tests;
+
+use hhashimoto\excel\Book;
+use hhashimoto\excel\Sheet;
 
 class BookTest extends \PHPUnit_Framework_TestCase {
     /**

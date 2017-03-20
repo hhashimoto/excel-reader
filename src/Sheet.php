@@ -1,4 +1,5 @@
 <?php
+namespace hhashimoto\excel;
 
 /**
  * xl/workbook.xml
@@ -71,7 +72,7 @@ class Sheet {
     }
 
     private function load() {
-        $zip = new ZipArchive;
+        $zip = new \ZipArchive;
         if (! $zip->open(self::$book->name())) {
             throw new \Exception("'{$name}' could not open!");
         }
@@ -82,7 +83,7 @@ class Sheet {
             $zip->close();
             $zip = null;
     
-            $xml = new SimpleXMLElement($sheet);
+            $xml = new \SimpleXMLElement($sheet);
             $sheet = null;
     
             if (! $this->left) {

@@ -1,4 +1,5 @@
 <?php
+namespace hhashimoto\excel;
 
 class Book {
     // string
@@ -32,7 +33,7 @@ class Book {
         try {
             // SharedString
             $ss = $zip->getFromName('xl/sharedStrings.xml');
-            $xml = new SimpleXMLElement($ss);
+            $xml = new \SimpleXMLElement($ss);
             $ss = null;
 
             $sharedStrings = new SharedStrings;
@@ -46,7 +47,7 @@ class Book {
             $zip->close();
             $zip = null;
 
-            $xml = new SimpleXMLElement($workbook);
+            $xml = new \SimpleXMLElement($workbook);
             $workbook = null;
 
             Sheet::belongsTo($this);

@@ -1,4 +1,5 @@
 <?php
+namespace hhashimoto\excel;
 
 class SharedStrings {
     private $strings;
