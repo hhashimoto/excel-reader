@@ -11,10 +11,18 @@ class Sheet {
     private $sheetId;
     private $refId;
 
+    /**
+     * Construct
+     *
+     * @param (string | SimpleXMLElement) $name
+     * @param (string | SimpleXMLElement) $sheetId
+     * @param (string | SimpleXMLElement) $refId
+     */
     public function __construct($name, $sheetId, $refId) {
-        $this->name    = $name;
-        $this->sheetId = $sheetId;
-        $this->refId   = $refId;
+        // '(string)$var' convert SimpleXMLElement to string
+        $this->name    = (string)$name;
+        $this->sheetId = (string)$sheetId;
+        $this->refId   = (string)$refId;
     }
 
     /**
