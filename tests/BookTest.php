@@ -50,7 +50,7 @@ class BookTest extends \PHPUnit_Framework_TestCase {
 
         // Sheet1 | Sheet3 | Sheet2
         $actual = $sut->getSheetByName('Sheet3');
-        $expected = new Sheet('Sheet3', '3', 'rId2');
+        $expected = new Sheet('tests/fixtures/test1.xlsx', 'Sheet3', '3', 'rId2');
         $this->assertEquals($expected, $actual);
     }
 

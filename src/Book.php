@@ -23,6 +23,7 @@ class Book {
         }
 
         $this->name = $name;
+        $this->sheets = null;
 
         try {
             $workbook = $zip->getFromName('xl/workbook.xml');
@@ -35,13 +36,16 @@ class Book {
             $sheets = new Sheets;
             foreach ($xml->sheets->sheet as $tag => $sheet) {
                 $r = $sheet->attributes('r', true);
-                $s = new Sheet($sheet['name'], $sheet['sheetId'], $r['id']);
+                $s = new Sheet($this->name, $sheet['name'], $sheet['sheetId'], $r['id']);
                 $sheets->add($s);
             }
             $this->sheets = $sheets;
 
         } catch (\Exception $e) {
             echo __FILE__ . ' : ' . __LINE__ . ' ' . $e . PHP_EOL;
+
+            $this->name = null;
+            $this->sheets = null;
         } finally {
             if ($zip) {
                 $zip->close();

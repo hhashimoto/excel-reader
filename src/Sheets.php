@@ -31,12 +31,17 @@ class Sheets implements Countable {
      */
     public function find($sheetName) {
         $l = mb_strlen($sheetName);
+        $found = null;
         foreach ($this->sheets as $sheet) {
-            if ($l !== mb_strlen($sheet->name())) continue;
+            if (($l !== mb_strlen($sheet->name())) ||
+                (mb_strpos($sheetName, $sheet->name()) !== 0)) {
+                $sheet->unload();
+                continue;
+            }
 
-            if (mb_strpos($sheetName, $sheet->name()) === 0) return $sheet;
+            $found = $sheet;
         }
-        return null;
+        return $found;
     }
 
     /**
