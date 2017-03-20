@@ -21,4 +21,22 @@ class SheetsTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(null, $sut->find('test１'));
         $this->assertEquals(null, $sut->find(''));
     }
+
+    /**
+     * @test
+     */
+    public function countReturnsNumberOfAddedSheets() {
+        $sut = new Sheets;
+
+        $this->assertCount(0, $sut);
+
+        $sheet1 = new Sheet('test1', 1, 'rId1');
+        $sheet2 = new Sheet('test2', 2, 'rId2');
+        $sheet3 = new Sheet('test3', 3, 'rId3');
+        $sut->add($sheet1);
+        $sut->add($sheet2);
+        $sut->add($sheet3);
+
+        $this->assertCount(3, $sut);
+    }
 }

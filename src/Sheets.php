@@ -5,7 +5,7 @@
  *   - workbook
  *     - sheets
  */
-class Sheets {
+class Sheets implements Countable {
     private $sheets;
 
     public function __construct() {
@@ -33,5 +33,14 @@ class Sheets {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Return number of sheets
+     *
+     * @return int
+     */
+    public function count() {
+        return count($this->sheets);
     }
 }
