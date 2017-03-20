@@ -7,18 +7,31 @@
  *       - sheet
  */
 class Sheet {
+    private $bookName;
+
     private $name;
     private $sheetId;
     private $refId;
 
+    // Cell
+    private $cells = null;
+
+    private $left   = null;
+    private $top    = null;
+    private $right  = null;
+    private $bottom = null;
+
     /**
      * Construct
      *
+     * @param string $bookName
      * @param (string | SimpleXMLElement) $name
      * @param (string | SimpleXMLElement) $sheetId
      * @param (string | SimpleXMLElement) $refId
      */
-    public function __construct($name, $sheetId, $refId) {
+    function __construct($bookName, $name, $sheetId, $refId) {
+        $this->bookName = $bookName;
+
         // '(string)$var' convert SimpleXMLElement to string
         $this->name    = (string)$name;
         $this->sheetId = (string)$sheetId;
@@ -47,5 +60,89 @@ class Sheet {
      */
     public function refId() {
         return $this->refId;
+    }
+
+    /**
+     * Unload all cell
+     */
+    public function unload() {
+        $this->cells = null;
+    }
+
+    private function load() {
+        $zip = new ZipArchive;
+        if (! $zip->open($this->bookName)) {
+            throw new \Exception("'{$name}' could not open!");
+        }
+
+        try {
+            $sheetNum = substr($this->refId, strlen('rId'));
+            $sheet = $zip->getFromName('xl/worksheets/sheet' . $sheetNum . '.xml');
+            $zip->close();
+            $zip = null;
+    
+            $xml = new SimpleXMLElement($sheet);
+            $sheet = null;
+    
+            if (! $this->left) {
+                // ex) ref="A6:K42"
+                preg_match('/^([a-zA-Z]+)(\d+):([a-zA-Z]+)(\d+)$/', $xml->dimension['ref'], $matches);
+                list($_, $this->left, $this->top, $this->right, $this->bottom) = $matches;
+            }
+    
+            $cells = [];
+            foreach ($xml->sheetData->row as $row) {
+                $cols = [];
+                foreach ($row->c as $c) {
+                    $val = '';
+                    if ($c->v) {
+                        if ($c['t'] && $c['t'] == 's') {
+                            $val = 'sharedStrings.xml # ' + $c->v;// TODO ref shared string
+                        } else {
+                            $val = $c->v;
+                        }
+                    }
+                    $cols[] = new Cell($val);
+                }
+                $cells[] = $cols;
+            }
+            $this->cells = $cells;
+        } catch (\Exception $e) {
+            echo __FILE__ . ' : ' . __LINE__ . ' ' . $e . PHP_EOL;
+
+            $this->cells = null;
+        } finally {
+            if ($zip) {
+                $zip->close();
+                $zip = null;
+            }
+        }
+    }
+
+    private function cells() {
+        if (! $this->cells) {
+            $this->load();
+        }
+        return $this->cells;
+    }
+
+    /**
+     * @param string $pos
+     * @return Cell
+     */
+    public function getCell($pos) {
+        $cells = $this->cells();
+
+        preg_match('/^(\w+)(\d+)$/', $pos, $matches);
+        list($_, $col, $row) = $matches;
+
+        $x = ord($col) - ord($this->left);
+        $y = $row - $this->top;
+
+        if (! array_key_exists($y, $cells) ||
+            ! array_key_exists($x, $cells[$y])) {
+            throw new \Exception("'{$pos}' not found!");
+        }
+        return $cells[$y][$x];
     }
 }
