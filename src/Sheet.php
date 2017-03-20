@@ -140,10 +140,10 @@ class Sheet {
         $x = ord($col) - ord($this->left);
         $y = $row - $this->top;
 
-        if (! array_key_exists($y, $cells) ||
-            ! array_key_exists($x, $cells[$y])) {
-            throw new \Exception("'{$pos}' not found!");
+        if (array_key_exists($y, $cells) &&
+            array_key_exists($x, $cells[$y])) {
+            return $cells[$y][$x];
         }
-        return $cells[$y][$x];
+        return new Cell;
     }
 }
