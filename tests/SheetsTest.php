@@ -21,7 +21,7 @@ class SheetsTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($sheet2, $sut->find('test2'));
         $this->assertEquals($sheet3, $sut->find('test3'));
 
-        $this->assertEquals(null, $sut->find('test‚P'));
+        $this->assertEquals(null, $sut->find('testï¼‘'));
         $this->assertEquals(null, $sut->find(''));
     }
 }
