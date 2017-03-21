@@ -77,15 +77,15 @@ class Sheet {
             $sheet = $zip->getFromName('xl/worksheets/sheet' . $sheetNum . '.xml');
             $zip->close();
             $zip = null;
-    
+
             $xml = new \SimpleXMLElement($sheet);
             $sheet = null;
-    
+
             $cells = [];
             foreach ($xml->sheetData->row as $row) {
                 $cols = [];
                 foreach ($row->c as $c) {
-                    preg_match('/^([a-zA-Z]+)(\d+)$/', $c['r'], $matches);
+                    preg_match('/^(\w+?)(\d+)$/', $c['r'], $matches);
                     list($_, $x, $y) = $matches;
                     $val = '';
                     if ($c->v) {
@@ -126,7 +126,7 @@ class Sheet {
     public function getCell($pos) {
         $cells = $this->cells();
 
-        preg_match('/^(\w+)(\d+)$/', $pos, $matches);
+        preg_match('/^(\w+?)(\d+)$/', $pos, $matches);
         list($_, $col, $row) = $matches;
 
         if (array_key_exists($row, $cells) &&
