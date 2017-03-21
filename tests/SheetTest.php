@@ -31,7 +31,7 @@ class SheetTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $actual);
 
         $expected = new Cell('20');
-        $actual = $sut->getCell('B1');
+        $actual = $sut->getCell('C1');
         $this->assertEquals($expected, $actual);
     }
 

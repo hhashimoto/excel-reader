@@ -17,11 +17,6 @@ class Sheet {
     // Cell
     private $cells = null;
 
-    private $left   = null;
-    private $top    = null;
-    private $right  = null;
-    private $bottom = null;
-
     static function belongsTo(Book $book) {
         self::$book = $book;
     }
@@ -86,16 +81,12 @@ class Sheet {
             $xml = new \SimpleXMLElement($sheet);
             $sheet = null;
     
-            if (! $this->left) {
-                // ex) ref="A6:K42"
-                preg_match('/^([a-zA-Z]+)(\d+):([a-zA-Z]+)(\d+)$/', $xml->dimension['ref'], $matches);
-                list($_, $this->left, $this->top, $this->right, $this->bottom) = $matches;
-            }
-    
             $cells = [];
             foreach ($xml->sheetData->row as $row) {
                 $cols = [];
                 foreach ($row->c as $c) {
+                    preg_match('/^([a-zA-Z]+)(\d+)$/', $c['r'], $matches);
+                    list($_, $x, $y) = $matches;
                     $val = '';
                     if ($c->v) {
                         if ($c['t'] && $c['t'] == 's') {
@@ -104,9 +95,9 @@ class Sheet {
                             $val = $c->v;
                         }
                     }
-                    $cols[] = new Cell($val);
+                    $cols[$x] = new Cell($val);
                 }
-                $cells[] = $cols;
+                $cells[$y] = $cols;
             }
             $this->cells = $cells;
         } catch (\Exception $e) {
@@ -138,12 +129,9 @@ class Sheet {
         preg_match('/^(\w+)(\d+)$/', $pos, $matches);
         list($_, $col, $row) = $matches;
 
-        $x = ord($col) - ord($this->left);
-        $y = $row - $this->top;
-
-        if (array_key_exists($y, $cells) &&
-            array_key_exists($x, $cells[$y])) {
-            return $cells[$y][$x];
+        if (array_key_exists($row, $cells) &&
+            array_key_exists($col, $cells[$row])) {
+            return $cells[$row][$col];
         }
         return new Cell;
     }
