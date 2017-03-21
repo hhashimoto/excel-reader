@@ -67,4 +67,17 @@ class BookTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame('tests/fixtures/test1.xlsx', $sut->name());
     }
+
+    /**
+     * @test
+     */
+    public function getSheetNames() {
+        $sut = new Book;
+        $sut->load('tests/fixtures/test1.xlsx');
+
+        $actual = $sut->getSheetNames();
+        $expected = ['Sheet1', 'Sheet3', 'Sheet2'];
+
+        $this->assertEquals($expected, $actual);
+    }
 }

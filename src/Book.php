@@ -116,4 +116,11 @@ class Book {
     public function getSharedString($index) {
         return $this->sharedStrings->get((int)$index);
     }
+
+    /**
+     * @return array
+     */
+    public function getSheetNames() {
+        return $this->sheets->sheetNames();
+    }
 }

@@ -53,4 +53,15 @@ class Sheets implements \Countable {
     public function count() {
         return count($this->sheets);
     }
+
+    /**
+     * @return array
+     */
+    public function sheetNames() {
+        $names = [];
+        foreach ($this->sheets as $sheet) {
+            $names[] = $sheet->name();
+        }
+        return $names;
+    }
 }
