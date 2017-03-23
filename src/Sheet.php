@@ -14,6 +14,8 @@ class Sheet {
     private $sheetId;
     private $refId;
 
+    private $targetColumnsToLoad = null;
+
     // Cell
     private $cells = null;
 
@@ -66,6 +68,67 @@ class Sheet {
         $this->cells = null;
     }
 
+    /**
+     * @param array $targetColumns
+     */
+    public function setTargetColumnsToLoad(array $targetColumns) {
+        if (!empty($targetColumns)) {
+            foreach ($targetColumns as $col) {
+                assert(preg_match('/^[a-zA-Z]+$/', $col), "'{$col}' is not valid for column name.");
+            }
+            $this->targetColumnsToLoad = $targetColumns;
+        }
+    }
+
+    private function loadAllCells($xml) {
+        $cells = [];
+        foreach ($xml->sheetData->row as $row) {
+            $cols = [];
+            foreach ($row->c as $c) {
+                preg_match('/^(\w+?)(\d+)$/', $c['r'], $matches);
+                list($_, $x, $y) = $matches;
+                $val = '';
+                if ($c->v) {
+                    if ($c['t'] && $c['t'] == 's') {
+                        $val = self::$book->getSharedString($c->v);
+                    } else {
+                        $val = $c->v;
+                    }
+                }
+                $cols[$x] = new Cell($val);
+            }
+            $cells[$y] = $cols;
+        }
+        return $cells;
+    }
+
+    private function loadOnlyTargetColumns($xml) {
+        // 指定カラムだけを連想配列として読み出す
+        $columns = implode('|', $this->targetColumnsToLoad);
+
+        $cells = [];
+        foreach ($xml->sheetData->row as $row) {
+            $cols = [];
+            foreach ($row->c as $c) {
+                if (!preg_match('/^(' . $columns . ')(\d+)$/', $c['r'], $matches)) {
+                    continue;
+                }
+                list($_, $x, $y) = $matches;
+                $val = '';
+                if ($c->v) {
+                    if ($c['t'] && $c['t'] == 's') {
+                        $val = self::$book->getSharedString($c->v);
+                    } else {
+                        $val = $c->v;
+                    }
+                }
+                $cols[$x] = new Cell($val);
+            }
+            $cells[$y] = $cols;
+        }
+        return $cells;
+    }
+
     private function load() {
         $zip = new \ZipArchive;
         if (! $zip->open(self::$book->name())) {
@@ -81,25 +144,11 @@ class Sheet {
             $xml = new \SimpleXMLElement($sheet);
             $sheet = null;
 
-            $cells = [];
-            foreach ($xml->sheetData->row as $row) {
-                $cols = [];
-                foreach ($row->c as $c) {
-                    preg_match('/^(\w+?)(\d+)$/', $c['r'], $matches);
-                    list($_, $x, $y) = $matches;
-                    $val = '';
-                    if ($c->v) {
-                        if ($c['t'] && $c['t'] == 's') {
-                            $val = self::$book->getSharedString($c->v);
-                        } else {
-                            $val = $c->v;
-                        }
-                    }
-                    $cols[$x] = new Cell($val);
-                }
-                $cells[$y] = $cols;
+            if ($this->targetColumnsToLoad) {
+                $this->cells = $this->loadOnlyTargetColumns($xml);
+            } else {
+                $this->cells = $this->loadAllCells($xml);
             }
-            $this->cells = $cells;
         } catch (\Exception $e) {
             echo __FILE__ . ' : ' . __LINE__ . ' ' . $e . PHP_EOL;
 
