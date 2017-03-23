@@ -26,7 +26,7 @@ class Sheets implements \Countable {
     /**
      * Return the sheet same name with $sheetName
      *
-     * If the sheet not founded, return null
+     * If the sheet not found, return null
      * @param string $sheetName
      * @return Sheet | null
      */

@@ -52,4 +52,23 @@ class SheetTest extends \PHPUnit_Framework_TestCase {
         $actual = $sut->getCell('C2');
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * @test
+     */
+    public function cannotGetCellBelongToNotTargetColumns() {
+        $book = new Book;
+        $book->load('tests/fixtures/test1.xlsx');
+
+        $sut = $book->getSheetByName('Sheet2');
+        $sut->setTargetColumnsToLoad(['B']);
+
+        $expected = new Cell('sheetName');
+        $actual = $sut->getCell('B2');
+        $this->assertEquals($expected, $actual);
+
+        $expected = new Cell('');
+        $actual = $sut->getCell('C2');
+        $this->assertEquals($expected, $actual);
+    }
 }
