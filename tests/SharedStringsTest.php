@@ -13,5 +13,6 @@ class SharedStringsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('sheetName', $book->getSharedString(0));
         $this->assertEquals('Sheet3', $book->getSharedString(1));
+        $this->assertEquals('あいうえお30', $book->getSharedString(3));
     }
 }

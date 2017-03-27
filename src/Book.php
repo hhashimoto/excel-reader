@@ -38,7 +38,15 @@ class Book {
 
             $sharedStrings = new SharedStrings;
             foreach ($xml->si as $si) {
-                $sharedStrings->add($si->t);
+                if (isset($si->r)) {
+                    $t = '';
+                    foreach ($si->r as $r) {
+                        $t .= $r->t;
+                    }
+                    $sharedStrings->add($t);
+                } else {
+                    $sharedStrings->add($si->t);
+                }
             }
             $this->sharedStrings = $sharedStrings;
 
