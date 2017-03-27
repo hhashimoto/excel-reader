@@ -84,9 +84,10 @@ class Sheet {
         $cells = [];
         foreach ($xml->sheetData->row as $row) {
             $cols = [];
+            $y = (string)$row['r'];
             foreach ($row->c as $c) {
-                preg_match('/^(\w+?)(\d+)$/', $c['r'], $matches);
-                list($_, $x, $y) = $matches;
+                preg_match('/^(\w+?)\d+$/', $c['r'], $matches);
+                list($_, $x) = $matches;
                 $val = '';
                 if ($c->v) {
                     if ($c['t'] && $c['t'] == 's') {
@@ -109,11 +110,12 @@ class Sheet {
         $cells = [];
         foreach ($xml->sheetData->row as $row) {
             $cols = [];
+            $y = (string)$row['r'];
             foreach ($row->c as $c) {
-                if (!preg_match('/^(' . $columns . ')(\d+)$/', $c['r'], $matches)) {
+                if (!preg_match('/^(' . $columns . ')\d+$/', $c['r'], $matches)) {
                     continue;
                 }
-                list($_, $x, $y) = $matches;
+                list($_, $x) = $matches;
                 $val = '';
                 if ($c->v) {
                     if ($c['t'] && $c['t'] == 's') {
