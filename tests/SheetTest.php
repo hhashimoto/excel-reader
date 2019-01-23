@@ -71,4 +71,32 @@ class SheetTest extends \PHPUnit_Framework_TestCase {
         $actual = $sut->getCell('C2');
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * @test
+     */
+    public function maxColumnReturnsRightColumnName() {
+        $book = new Book;
+        $book->load('tests/fixtures/test1.xlsx');
+
+        $sut = $book->getSheetByName('Sheet1');
+        $this->assertSame('E', $sut->maxColumn());
+
+        $sut = $book->getSheetByName('Sheet2');
+        $this->assertSame('C', $sut->maxColumn());
+    }
+
+    /**
+     * @test
+     */
+    public function maxRowReturnsBottomRowNumber() {
+        $book = new Book;
+        $book->load('tests/fixtures/test1.xlsx');
+
+        $sut = $book->getSheetByName('Sheet1');
+        $this->assertSame(1, $sut->maxRow());
+
+        $sut = $book->getSheetByName('Sheet2');
+        $this->assertSame(2, $sut->maxRow());
+    }
 }

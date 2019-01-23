@@ -19,6 +19,11 @@ class Sheet {
     // Cell
     private $cells = null;
 
+    private $minColumn;
+    private $minRow;
+    private $maxColumn;
+    private $maxRow;
+
     static function belongsTo(Book $book) {
         self::$book = $book;
     }
@@ -77,6 +82,18 @@ class Sheet {
                 assert(preg_match('/^[a-zA-Z]+$/', $col), "'{$col}' is not valid for column name.");
             }
             $this->targetColumnsToLoad = $targetColumns;
+        }
+    }
+
+    private function loadDimension($xml) {
+        list($min, $max) = explode(':', $xml->dimension['ref'][0]);
+        if (preg_match('/^(\w+)(\d+)$/', $min, $matches)) {
+            list($_, $this->minColumn, $r) = $matches;
+            $this->minRow = (int)$r;
+        }
+        if (preg_match('/^(\w+)(\d+)$/', $max, $matches)) {
+            list($_, $this->maxColumn, $r) = $matches;
+            $this->maxRow = (int)$r;
         }
     }
 
@@ -146,6 +163,8 @@ class Sheet {
             $xml = new \SimpleXMLElement($sheet);
             $sheet = null;
 
+            $this->loadDimension($xml);
+
             if ($this->targetColumnsToLoad) {
                 $this->cells = $this->loadOnlyTargetColumns($xml);
             } else {
@@ -164,10 +183,14 @@ class Sheet {
     }
 
     private function cells() {
+        $this->loadCellsIfNeeded();
+        return $this->cells;
+    }
+
+    private function loadCellsIfNeeded() {
         if (! $this->cells) {
             $this->load();
         }
-        return $this->cells;
     }
 
     /**
@@ -185,5 +208,21 @@ class Sheet {
             return $cells[$row][$col];
         }
         return new Cell;
+    }
+
+    /**
+     * @return int
+     */
+    public function maxRow() {
+        $this->loadCellsIfNeeded();
+        return $this->maxRow;
+    }
+
+    /**
+     * @return string
+     */
+    public function maxColumn() {
+        $this->loadCellsIfNeeded();
+        return $this->maxColumn;
     }
 }
