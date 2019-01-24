@@ -86,14 +86,10 @@ class Sheet {
     }
 
     private function loadDimension($xml) {
-        list($min, $max) = explode(':', $xml->dimension['ref'][0]);
-        if (preg_match('/^([a-zA-Z]+)(\d+)$/', $min, $matches)) {
-            list($_, $this->minColumn, $r) = $matches;
-            $this->minRow = (int)$r;
-        }
-        if (preg_match('/^([a-zA-Z]+)(\d+)$/', $max, $matches)) {
-            list($_, $this->maxColumn, $r) = $matches;
-            $this->maxRow = (int)$r;
+        if (preg_match('/^([a-zA-Z]+)(\d+):([a-zA-Z]+)(\d+)$/', $xml->dimension['ref'][0], $matches)) {
+            list($_, $this->minColumn, $minR, $this->maxColumn, $maxR) = $matches;
+            $this->minRow = (int)$minR;
+            $this->maxRow = (int)$maxR;
         }
     }
 
